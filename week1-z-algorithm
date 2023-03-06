@@ -1,0 +1,33 @@
+def compare(input_str, k_index):
+    i=0;
+    while(k_index + i < len(input_str) and input_str[i] == input_str[k_index + i]):
+        i+=1
+    return i
+    
+def z_algo(input_str):
+    n = len(input_str)
+    z = [0]*n
+    z[0] = n
+    r = None
+    l = None
+    
+    k=1
+    while(k<n):
+        if(r == None or k>r):
+            comp_len = compare(input_str, k)
+            z[k] = comp_len
+            if comp_len > 0:
+                r = comp_len
+                l = k
+        elif(z[k-l] < r-k):
+            z[k]=z[k-l]
+        elif(z[k-l] >= r-k):
+            comp_len = compare(input_str, r+1)
+            z[k]=r-k+comp_len
+            l=k
+            r=r+comp_len
+        k+=1
+            
+z_algo('abacabadabacaba')
+                
+            
