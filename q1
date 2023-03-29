@@ -1,0 +1,43 @@
+def compare(input_str, k_index, compare_index = 0):
+    i=0;
+    completed = False;
+    transpose_error = 0;
+    while(k_index + i < len(input_str)):
+        #continue normal execution
+        if(input_str[i + compare_index] == input_str[k_index + i]):
+            i+=1
+        elif(k_index + i + 1 < len(input_str) and input_str[i + compare_index] == input_str[k_index + i + 1] ):
+            transpose_error+=1;
+            if(transpose_error == 2):
+                break
+            else:
+                i+=2
+        else:
+            break
+    return i
+    
+def z_algo(input_str):
+    n = len(input_str)
+    z = [0]*n
+    z[0] = n
+    r = None
+    l = None
+    
+    k=1
+    while(k<n):
+        if(r == None or k>r):
+            comp_len = compare(input_str, k)
+            z[k] = comp_len
+            if comp_len > 0:
+                r = comp_len + k - 1
+                l = k
+        elif(z[k-l] < r-k + 1):
+            z[k]=z[k-l]
+        elif(z[k-l] >= r-k + 1):
+            comp_len = compare(input_str, r + 1, r-k + 1)
+            z[k]=z[k-l]+comp_len
+            l=k
+            r=r+comp_len -1
+        k+=1
+            
+z_algo('abba$babbababaabbaba')
