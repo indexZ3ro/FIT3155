@@ -17,17 +17,15 @@ def z_algo(input_str):
             comp_len = compare(input_str, k)
             z[k] = comp_len
             if comp_len > 0:
-                r = comp_len
+                r = comp_len + k
                 l = k
-        elif(z[k-l] < r-k):
+        elif(z[k-l] < r-k+1):
             z[k]=z[k-l]
-        elif(z[k-l] >= r-k):
+        elif(z[k-l] >= r-k+1):
             comp_len = compare(input_str, r+1)
             z[k]=r-k+comp_len
             l=k
             r=r+comp_len
         k+=1
             
-z_algo('abacabadabacaba')
-                
-            
+z_algo('aba$abacabadabacaba')
