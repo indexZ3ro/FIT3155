@@ -33,7 +33,7 @@ def z_algo(pat, txt):
                 break;
             first_compare = True
         # check if pattern has been found
-        if(i + base_index >= len(pat) or true_len + base_index >= len(pat)):
+        if(furthest_index > len(pat) and (i + base_index >= len(pat) or true_len + base_index >= len(pat))):
             output_arr.append((furthest_index-base_index, transpose_index))
             match_count+=1;
             
@@ -60,5 +60,11 @@ def z_algo(pat, txt):
             l = k
             r= q - 1
         k+=1;
+    print(match_count)
+    for item in output_arr:
+        if item[1] is None:
+            print(item[0] -len(pat))
+        else:
+            print(item[0] -len(pat), item[1] -len(pat))
         
 z_algo('aa','aaaaaaaba')
