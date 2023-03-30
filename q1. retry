@@ -1,0 +1,32 @@
+def compare(furthest_index, base_index, input_str):
+    i=0;
+    while(furthest_index + i < len(input_str) and input_str[base_index + i] == input_str[furthest_index + i]):
+        i+=1;
+    return furthest_index+i
+
+def z_algo(pat, txt):
+    input_str = pat + '$' + txt;
+    n = len(input_str)
+    z = [0]*n
+    z[0] = n
+    r = None
+    l = None
+    
+    k=1
+    while(k<n):
+        if(r == None or k>r):
+            q = compare(k, 0, input_str)
+            z[k] = q - k 
+            if q - k > 0:
+                r = q - 1
+                l = k
+        elif(z[k-l] < r-k + 1):
+            z[k]=z[k-l]
+        elif(z[k-l] >= r-k + 1):
+            q = compare(r + 1, r-k + 1, input_str)
+            z[k]=q - k
+            l = k
+            r= q - 1
+        k+=1;
+        
+z_algo('aab','aabaaba')
