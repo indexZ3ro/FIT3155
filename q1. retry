@@ -1,9 +1,3 @@
-def compare(furthest_index, base_index, input_str):
-    i=0;
-    while(furthest_index + i < len(input_str) and input_str[base_index + i] == input_str[furthest_index + i]):
-        i+=1;
-    return furthest_index+i
-
 def z_algo(pat, txt):
     input_str = pat + '$' + txt;
     n = len(input_str)
@@ -11,11 +5,53 @@ def z_algo(pat, txt):
     z[0] = n
     r = None
     l = None
+    output_arr = []
+    global match_count;
+    match_count = 0;
+    
+    def compare(furthest_index, base_index, first_compare=True):
+        global match_count
+        transpose_index = None
+        true_len = 0
+        
+        #can set option to skip the first comparison 
+        if first_compare:
+            transpose_error = 0
+        else:
+            transpose_error = 1
+        
+        i=0;
+        while(furthest_index + i < len(input_str)):
+            #regular compare
+            if(first_compare and input_str[base_index + i] == input_str[furthest_index + i]):
+                i+=1;
+            #check transposition error
+            elif(furthest_index + i+1 <len(input_str) and input_str[base_index + i] == input_str[furthest_index + i + 1] and input_str[base_index + i + 1] == input_str[furthest_index + i]):
+                transpose_error+=1;
+                if(transpose_error >= 2):
+                    break;
+                else:
+                    true_len = i;
+                    transpose_index = furthest_index+i
+                    i+=2;
+            else:
+                break;
+            first_compare = True
+        # check if pattern has been found
+        if(i >= len(pat) or true_len >= len(pat)):
+            output_arr.append((furthest_index, transpose_index))
+            match_count+=1;
+            
+        # return the actual z array value
+        if(transpose_error > 0):
+            return furthest_index + true_len;
+        else:
+            return furthest_index + i;
     
     k=1
     while(k<n):
         if(r == None or k>r):
-            q = compare(k, 0, input_str)
+            q = compare(k, 0)
             z[k] = q - k 
             if q - k > 0:
                 r = q - 1
@@ -23,7 +59,7 @@ def z_algo(pat, txt):
         elif(z[k-l] < r-k + 1):
             z[k]=z[k-l]
         elif(z[k-l] >= r-k + 1):
-            q = compare(r + 1, r-k + 1, input_str)
+            q = compare(r + 1, r-k + 1)
             z[k]=q - k
             l = k
             r= q - 1
