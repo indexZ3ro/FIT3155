@@ -13,12 +13,7 @@ def z_algo(pat, txt):
         global match_count
         transpose_index = None
         true_len = 0
-        
-        #can set option to skip the first comparison 
-        if first_compare:
-            transpose_error = 0
-        else:
-            transpose_error = 1
+        transpose_error = 0
         
         i=0;
         while(furthest_index + i < len(input_str)):
@@ -38,8 +33,8 @@ def z_algo(pat, txt):
                 break;
             first_compare = True
         # check if pattern has been found
-        if(i >= len(pat) or true_len >= len(pat)):
-            output_arr.append((furthest_index, transpose_index))
+        if(i + base_index >= len(pat) or true_len + base_index >= len(pat)):
+            output_arr.append((furthest_index-base_index, transpose_index))
             match_count+=1;
             
         # return the actual z array value
@@ -57,6 +52,7 @@ def z_algo(pat, txt):
                 r = q - 1
                 l = k
         elif(z[k-l] < r-k + 1):
+            q = compare(k + z[k-l], k - l, False)
             z[k]=z[k-l]
         elif(z[k-l] >= r-k + 1):
             q = compare(r + 1, r-k + 1)
@@ -65,4 +61,4 @@ def z_algo(pat, txt):
             r= q - 1
         k+=1;
         
-z_algo('aab','aabaaba')
+z_algo('aa','aaaaaaaba')
