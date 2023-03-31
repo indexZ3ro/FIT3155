@@ -1,0 +1,27 @@
+def boyerMoore(pat,txt):
+    r_arr=rPreprocessing(pat)
+    
+    i = 0
+    while (i<len(txt)):
+        j=i+len(pat)-1
+        while (j>=i):
+            #match
+            if(txt[j] == pat[j-i]):
+                test = 0
+            #mismatch
+            else:
+                bcr = max(1, j-r_arr[j][ord(txt[j])-97])
+            j-=1;
+
+def rPreprocessing(pat):
+    output_arr = [[-1]*26]
+    i = 0
+    while (i<len(pat)):
+        alphabet_index = ord(pat[i])-97
+        if(i != 0):
+            output_arr.append(output_arr[i-1].copy())
+        output_arr[i][alphabet_index] = i
+        i+=1
+    return output_arr
+    
+boyerMoore('aa','bab')
