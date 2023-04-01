@@ -1,96 +1,95 @@
 def boyerMoore(pat,txt):
-    r_arr = rPreprocessing(pat)
-    gs_arr = goodSuffix(pat)
-    mp_arr = matchPrefix(pat)
-    i = 0
-    while (i<len(txt)):
-        start = 0
-        stop = 0
+    r_arr=rPreprocessing(pat)
+    gs_arr=goodSuffix(pat)
+    mp_arr=matchPrefix(pat)
+    i=0
+    start, stop = None, None
+    while len(txt)-i>=len(pat):
         j=i+len(pat)-1
-        while (j>=i):
-            #mismatch
-            if(txt[j] != pat[j-i]):
-                bcr = max(1, j-r_arr[j-i][ord(txt[j-i])-97])
-                gs = gs_arr[j-i]
-                if(gs >= bcr):
-                    i += gs
+        while j>=i:
+            if start is not None and stop is not None and start <= j - i <= stop:
+                if i==j:
+                    print(j + 1)
+            elif txt[j] != pat[j - i]:
+                bcr=max(1, j-r_arr[j-i][ord(txt[j-i])-97])
+                gs=gs_arr[j - i]
+                if (gs >= bcr):
+                    i+=gs
                 else:
-                    i += bcr
+                    i+=bcr
                 break
-            j-=1;
-            if gs_arr[j-i] > 0:
-                start = gs_arr[j-i]-len(pat)+j-i
-                stop = gs_arr[j-i]
+            elif i == j:
+                print(j + 1)
+                i += 1
+            j -= 1
+            if gs_arr[j - i] > 0:
+                start = gs_arr[j - i] - len(pat) + j - i
+                stop = gs_arr[j - i]
             else:
                 start = 1
-                stop = mp_arr[j-i]
+                stop = mp_arr[j - i]
 def rPreprocessing(pat):
     alphabet_size = 3
-    output_arr = [[-1]*alphabet_size]
+    output_arr = [[-1] * alphabet_size]
     i = 0
-    while (i<len(pat)):
-        alphabet_index = ord(pat[i])-97
-        if(i != 0):
-            output_arr.append(output_arr[i-1].copy())
+    while i < len(pat):
+        alphabet_index = ord(pat[i]) - 97
+        if i != 0:
+            output_arr.append(output_arr[i - 1].copy())
         output_arr[i][alphabet_index] = i
-        i+=1
+        i += 1
     return output_arr
 def goodSuffix(pat):
-    reversed_pat = pat[::-1]
-    z_algo_arr = z_algo(reversed_pat)
-    reversed_z_algo = z_algo_arr[::-1]
-    
-    good_suff = (len(pat)+1)*[0]
-    p = 0
-    while p < len(pat)-1:
-        j = len(pat)-reversed_z_algo[p]
-        good_suff[j] = p + 1
+    reversed_pat=pat[::-1]
+    z_algo_arr=z_algo(reversed_pat)
+    reversed_z_algo=z_algo_arr[::-1]
+    good_suff=(len(pat)+1)*[0]
+    p=0
+    while p<len(pat)-1:
+        j=len(pat)-reversed_z_algo[p]
+        good_suff[j]=p+1
         p+=1
-    #create match_prefix
     return good_suff
 def matchPrefix(pat):
     z_algo_arr = z_algo(pat)
-    match_prefix = (len(pat)+1)*[0]
-    i = len(pat)-1
+    match_prefix = (len(pat) + 1) * [0]
+    i=len(pat)-1
     while i>=0:
-        if z_algo_arr[i] + i == len(pat):
-            match_prefix[i] = z_algo_arr[i]
+        if z_algo_arr[i]+i==len(pat):
+            match_prefix[i]=z_algo_arr[i]
         else:
-            match_prefix[i] = match_prefix[i+1]
-        i-=1;
+            match_prefix[i]=match_prefix[i+1]
+        i-=1
     return match_prefix
 def z_algo(input_str):
-    n = len(input_str)
-    z = [0]*n
-    z[0] = n
-    r = None
-    l = None
-    output_arr = []
-    
-    def compare(furthest_index, base_index):
-        i=0;
-        while(furthest_index + i < len(input_str)):
-            if(input_str[base_index + i] == input_str[furthest_index + i]):
+    n=len(input_str)
+    z=[0]*n
+    z[0]=n
+    r=None
+    l=None
+    def compare(furthest_index,base_index):
+        i = 0;
+        while furthest_index+i<len(input_str):
+            if input_str[base_index + i]==input_str[furthest_index+i]:
                 i+=1;
             else:
                 break;
-        return furthest_index + i;
-    
+        return furthest_index+i;
     k=1
-    while(k<n):
-        if(r == None or k>r):
-            q = compare(k, 0)
-            z[k] = q - k 
-            if q - k > 0:
-                r = q - 1
+    while k<n:
+        if r is None or k>r:
+            q=compare(k, 0)
+            z[k]=q-k
+            if q-k>0:
+                r = q-1
                 l = k
-        elif(z[k-l] < r-k + 1):
+        elif z[k-l]<r-k+1:
             z[k]=z[k-l]
-        elif(z[k-l] >= r-k + 1):
-            q = compare(r + 1, r-k + 1)
-            z[k]=q - k
-            l = k
-            r= q - 1
-        k+=1;
+        elif z[k - l]>=r-k+1:
+            q=compare(r+1, r-k+1)
+            z[k]=q-k
+            l=k
+            r=q-1
+        k+=1
     return z
-boyerMoore('acababacaba','abacababacabac')
+boyerMoore('acababacaba', 'abacababacabacabacababacabac')
