@@ -1,6 +1,6 @@
 def boyerMoore(pat,txt):
-    r_arr = rPreprocessing(pat)
-    gs_arr = goodSuffix(pat)
+    #r_arr = rPreprocessing(pat)
+    #gs_arr = goodSuffix(pat)
     mp_arr = matchPrefix(pat)
     
     i = 0
@@ -50,15 +50,16 @@ def goodSuffix(pat):
 
 def matchPrefix(pat):
     z_algo_arr = z_algo(pat)
-    match_prefix = len(pat)*[0]
+    match_prefix = (len(pat)+1)*[0]
     
-    let i = len(pat)-1
+    i = len(pat)-1
     while i>=0:
-        if z_algo_arr[i] + i - 1 == len(pat):
-            match_prefix[i] = z[i]
+        if z_algo_arr[i] + i == len(pat):
+            match_prefix[i] = z_algo_arr[i]
         else:
             match_prefix[i] = match_prefix[i+1]
         i-=1;
+    return match_prefix
 
 def z_algo(input_str):
     n = len(input_str)
