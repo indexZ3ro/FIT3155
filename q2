@@ -11,7 +11,7 @@ def boyerMoore(pat,txt):
                 if i==j:
                     print(j + 1)
             elif txt[j] != pat[j - i]:
-                bcr=max(1, j-r_arr[j-i][ord(txt[j-i])-97])
+                bcr=max(1, j-r_arr[j-i][ord(txt[j-i])-97]-i)
                 gs=gs_arr[j - i]
                 if (gs >= bcr):
                     i+=gs
