@@ -7,8 +7,8 @@ def st2sa(input_str):
         
 class SuffixTree:
     class Node:
-        def __init__(self, index):
-            self.index = index
+        def __init__(self, start):
+            self.start = start
             self.children = []
             self.end = None
             self.sufLink = self
@@ -17,7 +17,8 @@ class SuffixTree:
     def __init__(self):
         self.root = self.Node(None)
         self.active_node = self.root
-        self.remainder = None
+        self.remainder_index = None
+        self.remainder_length = 0
         self.last_j = 0
         self.global_end = 0
         
@@ -29,12 +30,26 @@ class SuffixTree:
                 self.add_node(self.active_node, 0)
             else:
                 for j in range(self.last_j, i+2):
-                    self.active_node.children
+                    match = False
                     
-                    self.active_node.children.append(self.Node(j))
-                    self.last_j += 1
-                    self.active_node = self.active_node.sufLink
-                    self.remainder -= 1
+                    if self.remainder_index is None:
+                        compare_str = [input_list[j]]
+                    else:
+                        compare_str = input_list[self.remainder_index: self.remainder_length] + [input_list[j]]
+                    
+                    
+                    for node in self.active_node.children:
+                        node_str = input_list[node.start:self.remainder_length+1]
+                    
+                        if node_str == compare_str:
+                            match = True
+                    
+                    #rule(3)  
+                    if match:
+                        rule3()
+                    #rule 2
+                    else:
+                        rule2()
             
         
     def add_node(self, parent, start_index):
