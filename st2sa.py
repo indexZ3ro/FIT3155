@@ -31,15 +31,15 @@ class SuffixTree:
             else:
                 for j in range(self.last_j, i+2):
                     match = False
-                    
-                    if self.remainder_index is None:
-                        compare_str = [input_list[j]]
-                    else:
-                        compare_str = input_list[self.remainder_index: self.remainder_length] + [input_list[j]]
-                    
-                    
+                    # NOTE: J = the tree up until the active node!
+                    # TODO: Change this so that we compare the next character (i+1) to the [active_node index + the remainder length] 
+                    # TODO: if we dont have an active edge iterate children and find if we have an active edge otherwise we can simply use the active edge
+                    #       if we have no match we need to add 
+                    # psudo code = 
+                       # if remainder exists: compare [remainder_index + remainder_len], [i+1]
+                       # else:
                     for node in self.active_node.children:
-                        node_str = input_list[node.start:self.remainder_length+1]
+                        # compare [child.start], [i+1]
                     
                         if node_str == compare_str:
                             match = True
@@ -47,7 +47,7 @@ class SuffixTree:
                     #rule(3)  
                     if match:
                         rule3()
-                    #rule 2
+                    #rule 2: uses j to create the start index of new node && update last j
                     else:
                         rule2()
             
