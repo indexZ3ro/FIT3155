@@ -86,26 +86,22 @@ class SuffixTree:
                     j += 1
 
     def rule2(self, node, index, j):
-        # resolve previous suffix_link
-        if self.previous_node is not None:
-            if(index == 7):
-                print("node", end='')
-                print(node)
-            # print("previousNode", end='')
-            # print(self.previous_node)
-            # print("active_node", end='')
-            # print(self.active_node)
-            self.previous_node.suf_link = self.active_node
-            self.previous_node = None
-
         # leaf only
         if self.active_edge_node is None:
             self.add_node(node, index)
+            # resolve previous suffix_link
+            if self.previous_node is not None:
+                self.previous_node.suf_link = self.active_node
+                self.previous_node = None
         else:
             node.end = node.start + self.remainder_length
 
             self.add_node(node, index)
             self.add_node(node, node.start + self.remainder_length)
+            # resolve previous suffix_link
+            if self.previous_node is not None:
+                self.previous_node.suf_link = node
+                self.previous_node = None
             self.previous_node = node
 
         # cleanup
