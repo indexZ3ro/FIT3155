@@ -4,17 +4,7 @@ def st2sa(input_str):
 
     sufTree = SuffixTree()
     sufTree.build(input_list)
-    print("root:", end='')
-    sufTree.root.debug()
-    for node in sufTree.root.children:
-        print("---")
-        node.debug()
-        for deep_node in node.children:
-            print(">>", end='     ')
-            deep_node.debug()
-            for deep_deep in deep_node.children:
-                print("//", end='                ')
-                deep_deep.debug()
+    sufTree.debug()
 
     print(sufTree.output_array(input_list))
 
@@ -52,12 +42,18 @@ class SuffixTree:
             else:
                 j = self.last_j + 1
                 while j <= i:
+                    print(f"i:{i}  j:{j}->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>:\n")
+                    print(f"active:{self.active_node}")
+                    print(f"remainder:{self.remainder_length}")
+                    print(f"remainder Index:{self.remainder_index}")
+                    self.debug()
                     if self.active_edge_node is None and self.remainder_length > 0:
                         for node in self.active_node.children:
                             if input_list[node.start] == input_list[self.remainder_index]:
                                 self.active_edge_node = node
                     # skip count down to extension
-
+                    if self.active_edge_node is not None:
+                        print(f"activeEdge:{self.active_edge_node}")
                     while self.active_edge_node is not None and self.remainder_length >= self.get_node_length(self.active_edge_node):
                         self.remainder_length -= self.get_node_length(self.active_edge_node)
                         self.remainder_index += self.get_node_length(self.active_edge_node)
@@ -66,7 +62,6 @@ class SuffixTree:
                             for node in self.active_node.children:
                                 if input_list[node.start] == input_list[self.remainder_index]:
                                     self.active_edge_node = node
-                                    break
                         else:
                             self.active_edge_node = None
                             self.remainder_index = None
@@ -89,6 +84,7 @@ class SuffixTree:
                     j += 1
 
     def rule2(self, node, index, j):
+
         # leaf only
         if self.active_edge_node is None:
             self.add_node(node, index)
@@ -97,15 +93,24 @@ class SuffixTree:
                 self.previous_node.suf_link = self.active_node
                 self.previous_node = None
         else:
-            node.end = node.start + self.remainder_length
+            new_node = self.add_node(self.active_node, self.active_edge_node.start)
+            new_node.end = self.active_edge_node.start + self.remainder_length
+            self.add_node(new_node, index)
+            self.active_node.children.remove(self.active_edge_node)
+            new_node.children.append(self.active_edge_node)
+            self.active_edge_node.start = self.active_edge_node.start + self.remainder_length
 
-            self.add_node(node, index)
-            self.add_node(node, node.start + self.remainder_length)
             # resolve previous suffix_link
             if self.previous_node is not None:
-                self.previous_node.suf_link = node
+                if index == 8 and j == 5:
+                    print("<><><><><><>>")
+                    print(self.active_node)
+                    print(self.active_edge_node)
+                    print(self.remainder_length)
+                    print(new_node)
+                self.previous_node.suf_link = new_node
                 self.previous_node = None
-            self.previous_node = node
+            self.previous_node = new_node
 
         # cleanup
         self.last_j = j
@@ -161,6 +166,18 @@ class SuffixTree:
                 self.dfs(child, input_list, suffix_array)
         return
 
+    def debug(self):
+        print("root:", end='')
+        self.root.debug()
+        for node in self.root.children:
+            print("---")
+            node.debug()
+            for deep_node in node.children:
+                print(">>", end='     ')
+                deep_node.debug()
+                for deep_deep in deep_node.children:
+                    print("//", end='                ')
+                    deep_deep.debug()
 
-#st2sa("mississippi")
-st2sa("abacabad")
+st2sa("MISSISSIPPI$")
+#st2sa("abacabad")
