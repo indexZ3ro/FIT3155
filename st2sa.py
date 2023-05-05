@@ -39,8 +39,10 @@ class SuffixTree:
         self.global_end = 0
         self.active_edge_node = None
         self.previous_node = self.root
+        self.input_list = []
 
     def build(self, input_list):
+        self.input_list = input_list
         n = len(input_list)
         for i in range(n):
             self.global_end += 1
@@ -55,8 +57,12 @@ class SuffixTree:
                             if input_list[node.start] == input_list[self.remainder_index]:
                                 self.active_edge_node = node
                     # skip count down to extension
+                    if(i==7 and j==6):
+                        print("i&j")
+                        print(self.active_edge_node)
                     if self.active_edge_node is not None:
                         while self.remainder_length > self.get_node_length(self.active_edge_node):
+                            print("HERE")
                             self.remainder_length -= self.get_node_length(self.active_edge_node)
                             self.remainder_index += self.get_node_length(self.active_edge_node)
                             self.active_node = self.active_edge_node
@@ -110,8 +116,10 @@ class SuffixTree:
 
         if self.active_node == self.root and self.remainder_length is not None:
             self.remainder_length -= 1
-            if self.remainder_length < 0:
+            if self.remainder_length <= 0:
                 self.remainder_length = 0
+            self.active_edge_node = None
+
         self.active_node = self.active_node.suf_link
 
     def rule3(self, node):
