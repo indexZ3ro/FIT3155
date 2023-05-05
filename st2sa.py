@@ -57,23 +57,20 @@ class SuffixTree:
                             if input_list[node.start] == input_list[self.remainder_index]:
                                 self.active_edge_node = node
                     # skip count down to extension
-                    if(i==7 and j==6):
-                        print("i&j")
-                        print(self.active_edge_node)
-                    if self.active_edge_node is not None:
-                        while self.remainder_length > self.get_node_length(self.active_edge_node):
-                            print("HERE")
-                            self.remainder_length -= self.get_node_length(self.active_edge_node)
-                            self.remainder_index += self.get_node_length(self.active_edge_node)
-                            self.active_node = self.active_edge_node
-                            if self.remainder_length > 0:
-                                for node in self.active_node.children:
-                                    if input_list[node.start] == input_list[self.remainder_index]:
-                                        self.active_edge_node = node
-                                        break
-                            else:
-                                self.active_edge_node = None
-                                self.remainder_index = None
+
+                    while self.active_edge_node is not None and self.remainder_length >= self.get_node_length(self.active_edge_node):
+                        self.remainder_length -= self.get_node_length(self.active_edge_node)
+                        self.remainder_index += self.get_node_length(self.active_edge_node)
+                        self.active_node = self.active_edge_node
+                        if self.remainder_length > 0:
+                            for node in self.active_node.children:
+                                if input_list[node.start] == input_list[self.remainder_index]:
+                                    self.active_edge_node = node
+                                    break
+                        else:
+                            self.active_edge_node = None
+                            self.remainder_index = None
+
                     if self.active_edge_node is not None:
                         if input_list[self.active_edge_node.start + self.remainder_length] != input_list[i]:
                             self.rule2(self.active_edge_node, i, j)
@@ -118,6 +115,9 @@ class SuffixTree:
             self.remainder_length -= 1
             if self.remainder_length <= 0:
                 self.remainder_length = 0
+                self.remainder_index = None
+            else:
+                self.remainder_index += 1
             self.active_edge_node = None
 
         self.active_node = self.active_node.suf_link
@@ -126,7 +126,7 @@ class SuffixTree:
         self.active_edge_node = node
         self.remainder_length += 1
         if self.remainder_length == 1:
-            self.remainder_index = node.start
+            self.remainder_index = node.start #NOTE may be + 1
         if len(node.children) > 0 and self.get_node_length(node) == self.remainder_length:
             self.active_node = node
             self.active_edge_node = None
