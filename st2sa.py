@@ -1,13 +1,15 @@
+# Author: Kieran Moran
+# Student ID: 31482244
+
+import sys
+
+
 def st2sa(input_str):
     input_list = [char for char in input_str]
     input_list.append('$')
-
     sufTree = SuffixTree()
     sufTree.build(input_list)
-    print("\nFINAL")
-    sufTree.debug()
-
-    print(sufTree.output_array(input_list))
+    return sufTree.output_array()
 
 
 class SuffixTree:
@@ -20,7 +22,8 @@ class SuffixTree:
             self.input_index = None
 
         def debug(self):
-            print(f"self={self}Node(start={self.start}, end={self.end}, suf_link={self.suf_link}, input_index={self.input_index})")
+            print(
+                f"self={self}Node(start={self.start}, end={self.end}, suf_link={self.suf_link}, input_index={self.input_index})")
 
     def __init__(self):
         self.root = self.Node(None)
@@ -53,7 +56,8 @@ class SuffixTree:
                                 self.active_edge_node = node
 
                     # skip count down to extension
-                    while self.active_edge_node is not None and self.remainder_length >= self.get_node_length(self.active_edge_node):
+                    while self.active_edge_node is not None and self.remainder_length >= self.get_node_length(
+                            self.active_edge_node):
                         self.remainder_length -= self.get_node_length(self.active_edge_node)
                         self.remainder_index += self.get_node_length(self.active_edge_node)
                         self.active_node = self.active_edge_node
@@ -103,12 +107,6 @@ class SuffixTree:
 
             # resolve previous suffix_link
             if self.previous_node is not None:
-                if index == 7 and j == 4:
-                    print("<><><><><><>>")
-                    print(self.active_node)
-                    print(self.active_edge_node)
-                    print(self.remainder_length)
-                    print(new_node)
                 self.previous_node.suf_link = new_node
                 self.previous_node = None
             self.previous_node = new_node
@@ -132,7 +130,7 @@ class SuffixTree:
         self.active_edge_node = node
         self.remainder_length += 1
         if self.remainder_length == 1:
-            self.remainder_index = node.start #NOTE may be + 1
+            self.remainder_index = node.start
         if len(node.children) > 0 and self.get_node_length(node) == self.remainder_length:
             self.active_node = node
             self.active_edge_node = None
@@ -144,7 +142,7 @@ class SuffixTree:
             self.previous_node.suf_link = self.active_node
             self.previous_node = None
 
-        #self.active_node = self.active_node.suf_link
+        # self.active_node = self.active_node.suf_link
 
     def add_node(self, parent, start_index):
         child = self.Node(start_index)
@@ -160,19 +158,18 @@ class SuffixTree:
     def get_node_length(self, node):
         return self.get_node_end(node) - node.start
 
-    def output_array(self, input_list):
+    def output_array(self):
         suffix_array = []
-        self.dfs(self.root, input_list, suffix_array)
+        self.dfs(self.root, suffix_array)
         return suffix_array
 
-    def dfs(self, node, input_list, suffix_array):
-        sorted_children = sorted(node.children, key=lambda child: input_list[child.start])
-        print(sorted_children)
+    def dfs(self, node, suffix_array):
+        sorted_children = sorted(node.children, key=lambda child: self.input_list[child.start])
         for child in sorted_children:
             if len(child.children) == 0:
                 suffix_array.append(child.input_index + 1)
             else:
-                self.dfs(child, input_list, suffix_array)
+                self.dfs(child, suffix_array)
         return
 
     def debug(self):
@@ -188,5 +185,29 @@ class SuffixTree:
                     print("//", end='                ')
                     deep_deep.debug()
 
-st2sa("mississippi")
-#st2sa("abacabad")
+
+def read_file(file_name):
+    with open(file_name, 'r') as file:
+        return file.read()
+
+
+def clear_file(filename):
+    with open(filename, 'w') as file:
+        pass
+
+
+if __name__ == '__main__':
+    clear_file('output_sa.txt')
+    if len(sys.argv) != 2:
+        print("Usage: python st2sa.py <text filename>")
+        sys.exit(1)
+
+    text_file = sys.argv[1]
+
+    text = read_file(text_file)
+
+    sa = st2sa(text)
+
+    with open('output_sa.txt', 'w') as file:
+        for index in sa:
+            file.write(f"{index}\n")
