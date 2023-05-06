@@ -4,6 +4,7 @@ def st2sa(input_str):
 
     sufTree = SuffixTree()
     sufTree.build(input_list)
+    print("\nFINAL")
     sufTree.debug()
 
     print(sufTree.output_array(input_list))
@@ -73,12 +74,20 @@ class SuffixTree:
                             self.rule3(self.active_edge_node)
                             j = i + 1  # set j to outside loop
                     else:
+                        if (i == 7 and j == 6):
+                            print("i=7")
+                            print(j)
+                            print(self.active_node)
+                            print(self.active_edge_node)
+                            print("end")
                         do_rule2 = True
                         for node in self.active_node.children:
                             if input_list[node.start] == input_list[i]:
                                 do_rule2 = False
                                 self.rule3(node)
                                 j = i + 1  # set j to outside loop
+                        print("LMAO")
+                        print(do_rule2)
                         if do_rule2:
                             self.rule2(self.active_node, i, j)
                     j += 1
@@ -102,7 +111,7 @@ class SuffixTree:
 
             # resolve previous suffix_link
             if self.previous_node is not None:
-                if index == 8 and j == 5:
+                if index == 7 and j == 4:
                     print("<><><><><><>>")
                     print(self.active_node)
                     print(self.active_edge_node)
@@ -137,6 +146,13 @@ class SuffixTree:
             self.active_edge_node = None
             self.remainder_length = 0
             self.remainder_index = None
+
+        # resolve previous
+        if self.previous_node is not None:
+            self.previous_node.suf_link = self.active_node
+            self.previous_node = None
+
+        #self.active_node = self.active_node.suf_link
 
     def add_node(self, parent, start_index):
         child = self.Node(start_index)
@@ -179,5 +195,5 @@ class SuffixTree:
                     print("//", end='                ')
                     deep_deep.debug()
 
-st2sa("MISSISSIPPI$")
+st2sa("Mississ")
 #st2sa("abacabad")
