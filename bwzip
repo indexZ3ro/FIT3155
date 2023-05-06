@@ -1,0 +1,52 @@
+# Author: Kieran Moran
+# Student ID: 31482244
+import sys
+
+from st2sa import st2sa
+from st2sa import read_file
+
+
+def bwt(sa, text):
+    bwt_array = []
+    for i in sa:
+        bwt_array.append(text[i - 2])
+    return bwt_array
+
+
+def eliasCodeword(number):
+    bit_array = [bit for bit in bin(number)[2:]]
+    cur_len = len(bit_array)
+    len_components = []
+    while cur_len > 1:
+        print(cur_len)
+        l_component = [bit for bit in bin(cur_len - 1)[2:]]
+        l_component[0] = '0'
+        cur_len = len(l_component)
+        len_components += l_component
+    bit_array = len_components + bit_array
+    return bit_array
+
+
+def buildCharArray(bwt):
+    unique_char_arr = [0]*91
+    for i in bwt:
+        unique_char_arr[ord(i)-36] += 1
+    return unique_char_arr
+
+
+def numberOfUniqueChar(unique_char_arr):
+    return sum(1 if element > 0 else 0 for element in unique_char_arr)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("Usage: python bwzip.py <text filename>")
+        sys.exit(1)
+
+    text_file = sys.argv[1]
+    text = read_file(text_file)
+    text += ('$')
+    sa = st2sa(text)
+    bwt = bwt(sa, text)
+    char_arr = buildCharArray(bwt)
+    print(numberOfUniqueChar(char_arr))
