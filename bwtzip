@@ -38,15 +38,68 @@ def numberOfUniqueChar(unique_char_arr):
     return sum(1 if element > 0 else 0 for element in unique_char_arr)
 
 
+class Huffman:
+    def __init__(self):
+        # end of list is the smallest count
+        self.root_nodes = []
+
+    class Node:
+        def __init__(self, count, letters):
+            self.count = count
+            self.upper_edge = None
+            self.letters = letters
+            self.children = []
+
+    def build(self, char_count_arr):
+        for i in range(len(char_count_arr)):
+            if char_count_arr[i] > 0:
+                self.root_nodes.append(self.Node(char_count_arr[i], [chr(i+36)]))
+        self.root_nodes.sort(key=lambda node: node.count, reverse=True)
+
+        while len(self.root_nodes) > 1:
+            left = self.root_nodes.pop()
+            left.upper_edge = '0'
+            right = self.root_nodes.pop()
+            right.upper_edge = '1'
+
+
+            total_count = left.count + right.count
+            new_letters = left.letters + right.letters
+            new_node = self.Node(total_count, new_letters)
+            new_node.children.append(left)
+            new_node.children.append(right)
+
+            new_index = None
+            for i in range(len(self.root_nodes)):
+                if total_count > self.root_nodes[i].count:
+                    new_index = i
+                    break
+
+            if new_index is None:
+                self.root_nodes.append(new_node)
+            else:
+                self.root_nodes.insert(new_index, new_node)
+
+    def findLetter(self, letter):
+        output_code = []
+        cur_node = self.root_nodes[0]
+        while len(cur_node.children) > 0:
+            for node in cur_node.children:
+                if letter in node.letters:
+                    output_code.append(node.upper_edge)
+                    cur_node = node
+        return output_code
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python bwzip.py <text filename>")
+        print("Usage: python bwtzip.py <text filename>")
         sys.exit(1)
 
     text_file = sys.argv[1]
     text = read_file(text_file)
-    text += ('$')
     sa = st2sa(text)
+    text += ('$')
     bwt = bwt(sa, text)
     char_arr = buildCharArray(bwt)
-    print(numberOfUniqueChar(char_arr))
+    huffman = Huffman()
+    huffman.build(char_arr)
