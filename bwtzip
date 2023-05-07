@@ -4,6 +4,7 @@ import sys
 
 from st2sa import st2sa
 from st2sa import read_file
+from st2sa import clear_file
 
 
 def bwt(sa, text):
@@ -18,7 +19,6 @@ def eliasCodeword(number):
     cur_len = len(bit_array)
     len_components = []
     while cur_len > 1:
-        print(cur_len)
         l_component = [bit for bit in bin(cur_len - 1)[2:]]
         l_component[0] = '0'
         cur_len = len(l_component)
@@ -90,7 +90,46 @@ class Huffman:
                     cur_node = node
         return output_code
 
+
+class WriteBin:
+    def __init__(self, file):
+        self.write_buf = []
+        self.file= open(file, 'ab')
+
+    def add_bit(self, bit):
+        self.write_buf.append(bit)
+        if len(self.write_buf) == 8:
+            byte = int(''.join(self.write_buf), 2)
+            self.file.write(bytes([byte]))
+            self.write_buf = []
+
+    def close(self):
+        if len(self.write_buf) > 0:
+            while len(self.write_buf) < 8:
+                self.write_buf.append('0')
+            byte = int(''.join(self.write_buf), 2)
+            self.file.write(bytes([byte]))
+            self.write_buf = []
+        self.file.close()
+
+def asciiBits(char):
+    number = ord(char)
+    output_arr = []
+    while number > 0:
+        bit = number % 2
+        output_arr.append(str(bit))
+        number = number // 2
+
+    # edge case
+    if char == '$':
+        output_arr.append('0')
+    return output_arr[::-1]
+
+
+
+
 if __name__ == '__main__':
+    clear_file('bwtencoded.bin')
     if len(sys.argv) != 2:
         print("Usage: python bwtzip.py <text filename>")
         sys.exit(1)
@@ -103,3 +142,51 @@ if __name__ == '__main__':
     char_arr = buildCharArray(bwt)
     huffman = Huffman()
     huffman.build(char_arr)
+
+    compressed_file = WriteBin('bwtencoded.bin')
+
+    # add bwt length
+    for bit in eliasCodeword(len(bwt)):
+        compressed_file.add_bit(bit)
+
+    # add n unique chars
+    for bit in eliasCodeword(numberOfUniqueChar(char_arr)):
+        compressed_file.add_bit(bit)
+
+    # add unique chars & number of chars
+    for i in range(1, len(char_arr)):
+        if char_arr[i] > 0:
+            letter = chr(i+36)
+            huff_array = huffman.findLetter(letter)
+            for bit in asciiBits(letter):
+                compressed_file.add_bit(bit)
+            for bit in eliasCodeword(len(huff_array)):
+                compressed_file.add_bit(bit)
+            for bit in huff_array:
+                compressed_file.add_bit(bit)
+
+    # do $ last
+    print( asciiBits('$'))
+    for bit in asciiBits('$'):
+        compressed_file.add_bit(bit)
+    for bit in eliasCodeword(3):
+        compressed_file.add_bit(bit)
+    for bit in huffman.findLetter('$'):
+        compressed_file.add_bit(bit)
+
+    run_len = 1
+    i = 0
+    while i < len(bwt):
+        if i == len(bwt) - 1 or bwt[i] != bwt[i + 1]:
+            for bit in huffman.findLetter(bwt[i]):
+                compressed_file.add_bit(bit)
+            for bit in eliasCodeword(run_len):
+                compressed_file.add_bit(bit)
+            run_len = 1
+        else:
+            run_len += 1
+        i += 1
+
+    compressed_file.close()
+
+
